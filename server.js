@@ -13,8 +13,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ Points to ../frontend (sibling folder of server/)
-app.use(express.static(join(__dirname, "../frontend")));
+// ✅ Points to public (sibling folder of server/)
+app.use(express.static(join(__dirname, "public")));
 
 const TMDB = "https://api.themoviedb.org/3";
 const KEY  = process.env.TMDB_API_KEY;
