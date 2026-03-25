@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MovieMood – Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      #080810;
+  --surface: #10101e;
+  --surface2:#181828;
+  --border:  rgba(255,255,255,0.08);
+  --accent:  #e8b84b;
+  --accent2: #c0392b;
+  --text:    #f0f0f0;
+  --muted:   #888;
+  --red:     #e74c3c;
+  --green:   #2ecc71;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* animated background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(232,184,75,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(192,57,43,0.07) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.container {
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.8rem;
+  letter-spacing: 3px;
+  color: var(--accent);
+  text-align: center;
+  margin-bottom: 4px;
+}
+.logo span { color: var(--text); }
+.tagline {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-bottom: 36px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+}
+
+.tabs {
+  display: flex;
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 4px;
+  margin-bottom: 28px;
+}
+.tab {
+  flex: 1;
+  padding: 9px;
+  text-align: center;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--muted);
+  transition: all .2s;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+.tab.active {
+  background: var(--accent);
+  color: #000;
+  font-weight: 600;
+}
+
+.form { display: flex; flex-direction: column; gap: 16px; }
+.form.hidden { display: none; }
+
+.field label {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.field input {
+  width: 100%;
+  padding: 11px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.92rem;
+  outline: none;
+  transition: border-color .2s;
+}
+.field input:focus { border-color: var(--accent); }
+.field input::placeholder { color: var(--muted); }
+
+.submit-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: filter .2s, transform .1s;
+  letter-spacing: .5px;
+}
+.submit-btn:hover { filter: brightness(1.1); }
+.submit-btn:active { transform: scale(0.98); }
+
+.error-msg {
+  color: var(--red);
+  font-size: 0.82rem;
+  text-align: center;
+  min-height: 20px;
+  display: none;
+}
+.error-msg.show { display: block; }
+
+.success-msg {
+  color: var(--green);
+  font-size: 0.82rem;
+  text-align: center;
+  min-height: 20px;
+  display: none;
+}
+.success-msg.show { display: block; }
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  margin: 4px 0;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.guest-btn {
+  width: 100%;
+  padding: 11px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: border-color .2s, color .2s;
+}
+.guest-btn:hover { border-color: var(--accent); color: var(--text); }
+
+.footer-note {
+  text-align: center;
+  font-size: 0.74rem;
+  color: var(--muted);
+  margin-top: 20px;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="logo">🎬 Movie<span>Mood</span></div>
+  <div class="tagline">Discover movies that match your mood</div>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" id="loginTab" onclick="switchTab('login')">Login</button>
+      <button class="tab" id="signupTab" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div class="form" id="loginForm">
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="loginUser" placeholder="Enter your username" autocomplete="username" />
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="Enter your password" autocomplete="current-password" />
+      </div>
+      <div class="error-msg" id="loginError"></div>
+      <button class="submit-btn" onclick="handleLogin()">Login →</button>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div class="form hidden" id="signupForm">
+      <div class="field">
+        <label>Full Name</label>
+        <input type="text" id="signupName" placeholder="Your full name" />
+      </div>
+      <div class="field">
+        <label>Username</label>
+        <input type="text" id="signupUser" placeholder="Choose a username" autocomplete="username" />
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="signupPass" placeholder="Create a password" autocomplete="new-password" />
+      </div>
+      <div class="field">
+        <label>Confirm Password</label>
+        <input type="password" id="signupPassConfirm" placeholder="Confirm your password" />
+      </div>
+      <div class="error-msg" id="signupError"></div>
+      <div class="success-msg" id="signupSuccess"></div>
+      <button class="submit-btn" onclick="handleSignup()">Create Account →</button>
+    </div>
+
+    <div class="divider">or</div>
+    <button class="guest-btn" onclick="continueAsGuest()">Continue as Guest</button>
+  </div>
+
+  <div class="footer-note">Your watchlist and ratings are saved locally on this device.</div>
+</div>
+
+<script>
+const USERS_KEY = 'mm_users';
+const SESSION_KEY = 'mm_session';
+
+function getUsers() {
+  try { return JSON.parse(localStorage.getItem(USERS_KEY)) || {}; }
+  catch { return {}; }
+}
+function saveUsers(u) { localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+
+function switchTab(tab) {
+  document.getElementById('loginTab').classList.toggle('active', tab === 'login');
+  document.getElementById('signupTab').classList.toggle('active', tab === 'signup');
+  document.getElementById('loginForm').classList.toggle('hidden', tab !== 'login');
+  document.getElementById('signupForm').classList.toggle('hidden', tab !== 'signup');
+  clearErrors();
+}
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.add('show');
+}
+function clearErrors() {
+  ['loginError','signupError','signupSuccess'].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove('show');
+    el.textContent = '';
+  });
+}
+
+function handleLogin() {
+  clearErrors();
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  if (!user || !pass) return showError('loginError', 'Please fill in all fields.');
+  const users = getUsers();
+  if (!users[user]) return showError('loginError', 'Username not found. Please sign up.');
+  if (users[user].password !== btoa(pass)) return showError('loginError', 'Incorrect password.');
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ username: user, name: users[user].name }));
+  window.location.href = 'index.html';
+}
+
+function handleSignup() {
+  clearErrors();
+  const name = document.getElementById('signupName').value.trim();
+  const user = document.getElementById('signupUser').value.trim();
+  const pass = document.getElementById('signupPass').value;
+  const confirm = document.getElementById('signupPassConfirm').value;
+  if (!name || !user || !pass || !confirm) return showError('signupError', 'Please fill in all fields.');
+  if (user.length < 3) return showError('signupError', 'Username must be at least 3 characters.');
+  if (pass.length < 4) return showError('signupError', 'Password must be at least 4 characters.');
+  if (pass !== confirm) return showError('signupError', 'Passwords do not match.');
+  const users = getUsers();
+  if (users[user]) return showError('signupError', 'Username already taken.');
+  users[user] = { name, password: btoa(pass), createdAt: Date.now() };
+  saveUsers(users);
+  const s = document.getElementById('signupSuccess');
+  s.textContent = '✅ Account created! Logging you in...';
+  s.classList.add('show');
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ username: user, name }));
+  setTimeout(() => window.location.href = 'index.html', 1200);
+}
+
+function continueAsGuest() {
+  localStorage.setItem(SESSION_KEY, JSON.stringify({ username: 'guest', name: 'Guest' }));
+  window.location.href = 'index.html';
+}
+
+// Enter key support
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  const loginHidden = document.getElementById('loginForm').classList.contains('hidden');
+  if (!loginHidden) handleLogin(); else handleSignup();
+});
+
+// If already logged in, redirect
+if (localStorage.getItem(SESSION_KEY)) window.location.href = 'index.html';
+</script>
+</body>
+</html>
