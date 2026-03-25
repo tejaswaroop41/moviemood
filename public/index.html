@@ -135,7 +135,7 @@ header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify
 .wl-title{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;letter-spacing:1px;}
 .wl-close{background:none;border:1px solid var(--border);color:var(--text);border-radius:50%;width:30px;height:30px;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;transition:background .2s;}
 .wl-close:hover{background:var(--surface2);}
-.wl-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);text-align:center;padding:40px 20px;gap:8px;}
+.wl-empty{flex:1;display:none;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);text-align:center;padding:40px 20px;gap:8px;}
 .wl-grid{flex:1;overflow-y:auto;padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px;align-content:start;}
 .wl-grid::-webkit-scrollbar{width:3px;}
 .wl-grid::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
@@ -345,7 +345,10 @@ function skeletons(n = 8) {
 }
 async function apiFetch(path) {
   try {
-    const r = await fetch(path, {signal: AbortSignal.timeout(10000)});
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 10000);
+    const r = await fetch(path, { signal: controller.signal });
+    clearTimeout(timer);
     if (!r.ok) throw new Error(`HTTP ${r.status}`);
     return await r.json();
   } catch(e) { console.error('Fetch error:', path, e.message); return null; }
@@ -406,6 +409,7 @@ function toggleRatingsPanel() {
   const open  = panel.classList.contains('open');
   panel.classList.toggle('open', !open);
   bd.classList.toggle('open', !open);
+  document.body.style.overflow = open ? '' : 'hidden';
   if (!open) renderRatingsList();
 }
 
@@ -710,6 +714,8 @@ async function loadSection(elId, endpoint) {
 // ── INIT ──
 updateWlCount();
 updateRatingsCount();
+renderWatchlistPanel();
+renderRatingsList();
 loadSection('trending', '/trending');
 loadSection('top',      '/top');
 loadSection('happy',    '/mood/happy');
